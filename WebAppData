@@ -1,0 +1,167 @@
+Expresiones Regulares
+------------------------
+
+FORMULARIO CLIENTES
+
+   *NOMBRE DE CLIENTE ( ^[A-Z][A-Z\s]+$ )
+
+FORMULARIO CAPTURA DE PEDIDOS
+
+   *ID  ( ^[A-Z]\d{4}$ )
+
+FORMULARIO CAPTURA DE PAGOS
+
+   *ID ( ^[A-Z]\d{4}$ )
+
+
+
+
+Formulas Utilizadas
+------------------------
+
+ID Dinamico
+=EXTRAE(INDICE( E2:E, CONTARA(E2:E)),2,4)+1
+
+Generacion de Folio Dinamico
+=SI(C2>1,SI(LARGO(C2)=1,"P000"&C2,SI(LARGO(C2)=2,"P00"&C2,SI(LARGO(C2)=3,"P0"&C2,SI(LARGO(C2)=4,"P"&C2,"")))),"P0001")
+
+
+
+
+Para Agregar tabla de saldos al SITE de Google
+Codigo iframe
+-------------------------------
+<iframe height="500" width="700" src="<<aqui agregar liga de hoja de claculo compartida>>/preview?rm=minimal#gid=<<aqui agregar gid>>"></iframe>
+
+nota: Cambiar la liga de la hoja de calculo compartida
+nota: No olvidar agregar el numero gid de la hoja de calculo donde esta la tabla de saldos
+
+
+
+
+
+Codigo Google Apps Script
+-------------------------
+
+const pedidos = '<<Pon el ID de tu Google Form de pedidos aqui>>';
+const pagos = '<<Pon el ID de tu Google Form de pagos aqui>>';
+
+function popClientes() {
+  populateId();	
+  populatePagos();
+  populatePedidos();
+}
+
+
+const populateId = () => {
+  const GOOGLE_SHEET_NAME = 'ID';
+  const GOOGLE_FORM_ID = pedidos;
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const [header, ...data] = ss.getSheetByName(GOOGLE_SHEET_NAME).getRange('A1:A').getDisplayValues();
+
+  const choices = {};
+  header.forEach((title, i) => {
+    choices[title] = data.map((d) => d[i]).filter((e) => e);
+  });
+
+  FormApp.openById(GOOGLE_FORM_ID)
+    .getItems()
+    .map((item) => ({
+      item,
+      values: choices[item.getTitle()],
+    }))
+    .filter(({ values }) => values)
+    .forEach(({ item, values }) => {
+      switch (item.getType()) {
+        case FormApp.ItemType.CHECKBOX:
+          item.asCheckboxItem().setChoiceValues(values);
+          break;
+        case FormApp.ItemType.LIST:
+          item.asListItem().setChoiceValues(values);
+          break;
+        case FormApp.ItemType.MULTIPLE_CHOICE:
+          item.asMultipleChoiceItem().setChoiceValues(values);
+          break;
+        default:
+        // ignore item
+      }
+    });
+};
+
+//----------------------------------------------------------------------------------------
+const populatePagos = () => {
+  const GOOGLE_SHEET_NAME = 'Validacion';
+  const GOOGLE_FORM_ID = pagos;
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const [header, ...data] = ss.getSheetByName(GOOGLE_SHEET_NAME).getDataRange().getDisplayValues();
+
+  const choices = {};
+  header.forEach((title, i) => {
+    choices[title] = data.map((d) => d[i]).filter((e) => e);
+  });
+
+  FormApp.openById(GOOGLE_FORM_ID)
+    .getItems()
+    .map((item) => ({
+      item,
+      values: choices[item.getTitle()],
+    }))
+    .filter(({ values }) => values)
+    .forEach(({ item, values }) => {
+      switch (item.getType()) {
+        case FormApp.ItemType.CHECKBOX:
+          item.asCheckboxItem().setChoiceValues(values);
+          break;
+        case FormApp.ItemType.LIST:
+          item.asListItem().setChoiceValues(values);
+          break;
+        case FormApp.ItemType.MULTIPLE_CHOICE:
+          item.asMultipleChoiceItem().setChoiceValues(values);
+          break;
+        default:
+        // ignore item
+      }
+    });
+};
+
+//--------------------------------------------------------------------------------------------
+const populatePedidos = () => {
+  const GOOGLE_SHEET_NAME = 'Validacion';
+  const GOOGLE_FORM_ID = pedidos;
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  const [header, ...data] = ss.getSheetByName(GOOGLE_SHEET_NAME).getDataRange().getDisplayValues();
+
+  const choices = {};
+  header.forEach((title, i) => {
+    choices[title] = data.map((d) => d[i]).filter((e) => e);
+  });
+
+  FormApp.openById(GOOGLE_FORM_ID)
+    .getItems()
+    .map((item) => ({
+      item,
+      values: choices[item.getTitle()],
+    }))
+    .filter(({ values }) => values)
+    .forEach(({ item, values }) => {
+      switch (item.getType()) {
+        case FormApp.ItemType.CHECKBOX:
+          item.asCheckboxItem().setChoiceValues(values);
+          break;
+        case FormApp.ItemType.LIST:
+          item.asListItem().setChoiceValues(values);
+          break;
+        case FormApp.ItemType.MULTIPLE_CHOICE:
+          item.asMultipleChoiceItem().setChoiceValues(values);
+          break;
+        default:
+        // ignore item
+      }
+    });
+};
